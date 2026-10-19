@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>경기도 소상공인 지원사업 지도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@700;900&display=swap">
+<style>
+/* Layout: sticky filter bar over a single reading column; city sections stacked, cards in a 2-up grid that collapses to 1. */
+:root{
+  --bg:#f3f6f4; --surface:#ffffff; --surface-2:#e9efec; --fg:#17201e; --muted:#5a6b67; --line:#d3dcd8;
+  --accent:#0f6e66; --accent-ink:#ffffff; --accent-soft:#dcefeb;
+  --warn:#9a4b00; --warn-soft:#fbe9d2; --open:#1f6f3a; --open-soft:#dcefdf; --closed:#7a2e2e; --closed-soft:#f4dcdc;
+  --display:"Noto Serif KR","Apple SD Gothic Neo","Malgun Gothic",serif;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#101715; --surface:#182220; --surface-2:#1f2c29; --fg:#e8eeec; --muted:#9db0ab; --line:#2c3b37;
+  --accent:#5ec4b8; --accent-ink:#0b1513; --accent-soft:#173532;
+  --warn:#f0b36a; --warn-soft:#3a2a14; --open:#7fd39a; --open-soft:#17301f; --closed:#f09a9a; --closed-soft:#3a1c1c;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#101715; --surface:#182220; --surface-2:#1f2c29; --fg:#e8eeec; --muted:#9db0ab; --line:#2c3b37;
+  --accent:#5ec4b8; --accent-ink:#0b1513; --accent-soft:#173532;
+  --warn:#f0b36a; --warn-soft:#3a2a14; --open:#7fd39a; --open-soft:#17301f; --closed:#f09a9a; --closed-soft:#3a1c1c;
+  color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:var(--accent)}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.hero{padding-block:36px 20px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(28px,4.5vw,40px);line-height:1.2;margin:8px 0 10px;text-wrap:balance}
+.lede{max-width:64ch;color:var(--muted);margin:0 0 18px}
+.stats{display:flex;flex-wrap:wrap;gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px;min-width:120px}
+.stat b{display:block;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat span{font-size:12px;color:var(--muted)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-block:10px}
+.bar .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar input[type=search]{flex:1 1 220px;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit}
+.bar select{padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit;max-width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:4px 11px;font:inherit;font-size:13px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip:focus-visible,.bar input:focus-visible,.bar select:focus-visible,.card a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:12px 48px}
+section.city{padding-block:22px 6px;border-top:1px solid var(--line)}
+section.city:first-of-type{border-top:0}
+.city-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin-bottom:12px}
+.city-head h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0}
+.city-head .n{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.city-head .scope{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:720px){.grid{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card .top{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{font-size:12px;border-radius:6px;padding:2px 8px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.tag.cat{background:var(--accent-soft);color:var(--accent)}
+.tag.open{background:var(--open-soft);color:var(--open);font-weight:600}
+.tag.soon{background:var(--warn-soft);color:var(--warn);font-weight:600}
+.tag.closed{background:var(--closed-soft);color:var(--closed);font-weight:600}
+.card h3{margin:0;font-size:16.5px;line-height:1.35;font-weight:700;text-wrap:balance}
+.card .agency{font-size:13px;color:var(--muted);margin-top:-4px}
+dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;font-size:14px}
+dt{color:var(--muted);white-space:nowrap}
+dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.card .foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin-top:auto;padding-top:6px;border-top:1px dashed var(--line);font-size:13px;color:var(--muted)}
+.card .foot a{font-weight:600;text-decoration:none}
+.card .foot a:hover{text-decoration:underline}
+.none{background:var(--surface-2);border-radius:10px;padding:14px 16px}
+.none h2{font-family:var(--display);font-size:18px;margin:0 0 6px}
+.none p{margin:0;color:var(--muted);font-size:14px;max-width:70ch}
+.none ul{margin:8px 0 0;padding-left:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+.none li{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:3px 9px;font-size:13px}
+.note{font-size:13px;color:var(--muted);border-left:3px solid var(--accent);padding:6px 12px;margin:14px 0 0;max-width:72ch}
+.empty{padding:40px 0;text-align:center;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding-block:18px 36px;font-size:13px;color:var(--muted)}
+footer ul{margin:6px 0 0;padding-left:18px}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}.card:hover{border-color:var(--accent)}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">기준일 2026년 10월 19일 · 대출·보증 상품 제외</div>
+  <h1>경기도 소상공인 지원사업 지도</h1>
+  <p class="lede">경기도 31개 시·군 공고와 경기바로·기업마당·소상공인24를 확인해, 지금 접수 중인 보조금·바우처·컨설팅·시설개선 사업만 모았습니다. 접수기간은 공고 원문에서 직접 확인한 것이며, 예산이 소진되면 공고보다 먼저 마감될 수 있습니다.</p>
+  <div class="stats" id="stats"></div>
+</header>
+</div>
+
+<div class="bar"><div class="wrap">
+  <div class="row">
+    <input type="search" id="q" placeholder="사업명·지원내용·기관 검색 (예: 간판, 컨설팅, 바우처)" aria-label="검색">
+    <select id="city" aria-label="시·군 선택"><option value="">전체 시·군</option></select>
+    <select id="sort" aria-label="정렬">
+      <option value="city">시·군 순</option>
+      <option value="deadline">마감 임박 순</option>
+    </select>
+  </div>
+  <div class="chips" id="cats" role="group" aria-label="지원 유형"></div>
+</div></div>
+
+<main class="wrap">
+  <div id="list"></div>
+  <div class="none" id="none"></div>
+  <p class="note">지원대상·금액은 요약입니다. 실제 신청 전 각 카드의 <b>공고 보기</b> 링크에서 자격 요건, 제외 업종, 자부담 비율, 필요 서류를 꼭 확인하세요. 광역·전국 사업은 사업장 소재 시·군과 관계없이 경기도 전체 소상공인이 신청할 수 있습니다.</p>
+</main>
+
+<footer class="wrap">
+  <div>주요 확인 경로</div>
+  <ul>
+    <li>경기바로(경기도 소상공인 종합지원 포털) ggbaro.kr · 종합상담 1600-8001</li>
+    <li>소상공인24 sbiz24.kr · 통합콜센터 1533-0100</li>
+    <li>기업마당 bizinfo.go.kr (지역: 경기, 진행 중 공고)</li>
+    <li>각 시·군 홈페이지 고시공고 및 소상공인지원 게시판</li>
+  </ul>
+</footer>
+
+<script>
+const DATA = [{"city": "수원시", "name": "식품안심업소(위생등급 지정업소) 청소비 지원사업", "agency": "수원시 위생정책과", "target": "수원시 일반·휴게음식점 중 위생등급 최종 지정일로부터 1년 경과 업소, 40개소. 2025년 동일사업 수혜업소·휴업자·무점포·지방세 체납자 제외", "support": "덕트·후드·환풍기, 주방·객석 바닥·벽 등 청소비 업소당 최대 70만원(초과분 자부담, 청소 후 보조금 청구)", "period": "2026-04-01 ~ 2026-11-20 (선착순, 업소 수 충족 시 조기마감)", "deadline": "2026-11-20", "how": "방문(수원시청 새빛민원실)·우편(위생정책과)·이메일(my1020@korea.kr). 문의 031-5191-3235", "url": "https://www.suwon.go.kr/web/saeallOfr/BD_ofrView.do?notAncmtMgtNo=151365", "cat": "시설·환경개선"}, {"city": "수원시", "name": "2026년 수원시 상인 행정 지원사업(상인회 공모사업 지원)", "agency": "수원도시재단 경제본부", "target": "수원시 전통시장·골목형상점가·골목상권 상인회(상인회 단위 신청)", "support": "공모사업 제안서 작성, 상인회 지정, 골목형상점가 등록 서류 작성 등 전문가·컨설턴트 지원(최대 2회)", "period": "2026-02-26 ~ 2026-10-31 (예산 소진 시까지 선착순)", "deadline": "2026-10-31", "how": "온라인 구글폼 신청 + 지원신청서 첨부. 문의 수원도시재단 031-280-6300", "url": "https://www.sscf2016.or.kr/entry_view.do?mn_key=02020000&srch_page=1&ACV_CNT_BOARD_NUM=202602261556150090", "cat": "컨설팅·교육·기타"}, {"city": "부천시", "name": "공공배달앱 「배달특급」 개별 가맹점 홍보물 제작 지원", "agency": "부천산업진흥원 상권활성화센터", "target": "부천시 내 배달특급 가맹점 소상공인(40개소 이상)", "support": "전단지·스티커 등 맞춤형 홍보물 제작, 상점당 최대 50만원(배송비·부가세 미지원)", "period": "2026-03-03 ~ 2026-11-30 18:00 (예산 소진 시까지 선착순)", "deadline": "2026-11-30", "how": "부천산업진흥원 사업신청 시스템(bizbc.or.kr) 온라인 접수. 문의 032-716-6142", "url": "https://www.bizbc.or.kr/kor/contents/BC0101010000.do?schM=view&bizPbancSn=11233", "cat": "마케팅·홍보"}, {"city": "부천시", "name": "2026년 부천시 골목상권 상인회 조직 활성화 지원사업", "agency": "부천산업진흥원(부천시골목상점가연합회 접수 대행)", "target": "부천시 상인회 등록증 보유 골목상권 상인회 28개소 내외(상인회 단위 신청)", "support": "총회·간담회 등 조직 활성화 행사 식사비·다과비 상인회당 50만원 이내(20% 자부담)", "period": "2026-10-15 ~ 2026-10-23 18:00", "deadline": "2026-10-23", "how": "연합회 매니저 이메일(noahne@naver.com) 제출 후 진흥원 일괄 접수. 문의 010-2462-7744", "url": "https://www.bizbc.or.kr/kor/contents/BC0101010000.do?schM=view&bizPbancSn=11396", "cat": "보조금·지원금"}, {"city": "안산시", "name": "2026년 소상공인 폐업 및 재기 지원 사업(변경 모집 공고)", "agency": "안산시 상권활성화재단 사업지원팀", "target": "안산시에 사업장을 둔 2025~2026년 폐업(폐업 예정) 소상공인 35개 점포(선착순)", "support": "점포철거비 최대 300만원 + 재기 지원 컨설팅(2개 분야 필수 선택)", "period": "2026-09-11 ~ 예산 소진 시까지 (선착순)", "deadline": "예산소진시", "how": "현장접수(상록구 해안로 705 기술고도화동 202호) 또는 이메일(kiti3086@amrf.or.kr). 문의 031-500-4334", "url": "https://amrf.or.kr/%EC%9E%AC%EB%8B%A8%EC%82%AC%EC%97%85%EC%95%88%EB%82%B4/%EC%A7%80%EC%9B%90%EC%82%AC%EC%97%85%EA%B3%B5%EA%B3%A0/?uid=628&mod=document&pageid=1", "cat": "보조금·지원금"}, {"city": "안산시", "name": "2026 「소상공인 희망아카데미」 우수 점포 성공사례 특강", "agency": "안산시 상권활성화재단", "target": "안산시에서 영업장을 운영 중인 상인 및 예비창업자, 회차당 35명 내외 선착순", "support": "우수점포 대표의 성공 노하우 특강과 대표음식 체험(무료). 1~4회차 10/20·22·27·29 14:00, 5~10회차 추후 공지", "period": "2026-10-12 ~ 회차별 선착순 마감(10회차까지 순차 모집)", "deadline": "2026-10-29", "how": "회차별 네이버폼 신청. 문의 031-411-1150 / 031-500-4335", "url": "https://amrf.or.kr/%EC%9E%AC%EB%8B%A8%EC%82%AC%EC%97%85%EC%95%88%EB%82%B4/%EC%A7%80%EC%9B%90%EC%82%AC%EC%97%85%EA%B3%B5%EA%B3%A0/?uid=642&mod=document&pageid=1", "cat": "컨설팅·교육·기타", "note": "마감일은 공지된 4회차 교육일 기준"}, {"city": "화성시", "name": "2026년 하반기 마케팅 활성화 지원 참가기업 모집", "agency": "화성산업진흥원", "target": "화성시 관내 본사 또는 공장 소재 중소기업(소상공인 포함)", "support": "기업당 최대 2개 분야, 300만원 이내 마케팅 비용(홍보물·디자인, 디지털 광고, 오프라인 광고, 전시·박람회)", "period": "2026-08-13 ~ 2026-10-30", "deadline": "2026-10-30", "how": "화성시 기업지원플랫폼 온라인 접수(platform.hsbiz.or.kr). 문의 031-374-6468", "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000125493", "cat": "마케팅·홍보"}, {"city": "화성시", "name": "2026년 맞춤형 컨설팅 지원(화성시 소공인특화지원센터)", "agency": "화성상공회의소(소공인특화지원센터)", "target": "화성시 제조 소공인(C22, C24~C31 업종, 상시근로자 10인 미만). 동탄·병점 등 일부 지역 제외, 13개사", "support": "전문 컨설턴트 방문 컨설팅 최대 16시간, 1개사당 160만원 상당(기술·인증, 노무, 마케팅, 재무, 수출, 특허 등)", "period": "연중 상시, 사업비 소진 시까지(사업기간 ~2026-10-31)", "deadline": "2026-10-31", "how": "소상공인24(sbiz24.kr) 온라인 접수. 문의 031-354-3641", "url": "https://hwaseongcci.korcham.net/file/dext5uploaddata/2026/[%EB%B6%99%EC%9E%841]%202026%EB%85%84%20%EB%A7%9E%EC%B6%A4%ED%98%95%20%EC%BB%A8%EC%84%A4%ED%8C%85%20%EC%A7%80%EC%9B%90%EC%82%AC%EC%97%85%20%EA%B3%B5%EA%B3%A0%EB%AC%B8.pdf", "cat": "컨설팅·교육·기타"}, {"city": "화성시", "name": "2026년 동탄 소공인복합지원센터 인프라 지원(장비·시설)", "agency": "화성산업진흥원(동탄 소공인복합지원센터)", "target": "화성시 소재 소공인(소기업·소상공인 확인서 발급 가능 업체)", "support": "소공인 장비·시설 구축비 일부 지원(한도·지원율은 공고문 확인)", "period": "2026-02-02 ~ 2026-12-31", "deadline": "2026-12-31", "how": "화성시 기업지원플랫폼 온라인 접수(platform.hsbiz.or.kr). 문의 031-377-3693", "url": "https://bizcenter.hsbiz.or.kr/bizinfo/hwaseong", "cat": "시설·환경개선"}, {"city": "화성시", "name": "2026년 영상촬영 및 편집 심화교육 교육생 모집", "agency": "화성소공인복합지원센터", "target": "화성시 소공인", "support": "영상촬영·편집 심화 실무교육(무료)", "period": "2026-09-22 ~ 2026-10-21", "deadline": "2026-10-21", "how": "센터 홈페이지 지원사업신청(hssmc.or.kr). 문의 031-296-7900", "url": "https://www.hssmc.or.kr/notice/73", "cat": "컨설팅·교육·기타"}, {"city": "광명시", "name": "핵점포 육성사업(광명노포) - 상권친화형 도시조성 소상공인 분야 재공고", "agency": "광명시 일자리경제과 / 광명시자영업지원센터", "target": "광명시에서 30년 이상 영업 중인 소상공인(가업승계 포함), 10개소 이내. 프랜차이즈·배달 위주 음식점·경기노포 기수혜 점포 제외", "support": "노포 현판·인증서, 스토리텔링·SNS 콘텐츠, 1:1 컨설팅, 인테리어·간판·조명 등 환경개선(자부담 10%). 총 1억원 규모", "period": "2026-10-14 ~ 2026-11-13", "deadline": "2026-11-13", "how": "방문 또는 이메일(hyojj0902@korea.kr) 접수, 광명시청 일자리경제과 소상공인지원팀. 문의 02-2680-6865", "url": "https://sbdc.gm.go.kr/s41/27196", "cat": "시설·환경개선"}, {"city": "광명시", "name": "메뉴개발 지원사업 - 상권친화형 도시조성 소상공인 분야 재공고", "agency": "광명시 일자리경제과 / 광명시자영업지원센터", "target": "광명시에서 6개월 이상 영업 중인 외식업 소상공인, 20개소 이내(2025년 참여자 제외)", "support": "특화메뉴 개발·레시피 고도화 컨설팅, 역량강화 교육, 우수점포 온라인 마케팅 연계", "period": "2026-10-14 ~ 2026-11-13", "deadline": "2026-11-13", "how": "방문 또는 이메일(hyojj0902@korea.kr) 접수. 문의 02-2680-6717", "url": "https://sbdc.gm.go.kr/s41/27196", "cat": "컨설팅·교육·기타"}, {"city": "광명시", "name": "찾아가는 온라인 마케팅 - 상권친화형 도시조성 소상공인 분야 재공고", "agency": "광명시 일자리경제과 / 광명시자영업지원센터", "target": "광명시에서 6개월 이상 영업 중인 소상공인, 20개소 이내", "support": "전문 마케터가 점포를 방문해 1:1 온라인 마케팅 실습교육(콘텐츠 업로드 체험 등)", "period": "2026-10-14 ~ 2026-11-13", "deadline": "2026-11-13", "how": "방문 또는 이메일(hyojj0902@korea.kr) 접수, 광명시청 일자리경제과 소상공인지원팀. 문의 02-2680-6717", "url": "https://sbdc.gm.go.kr/s41/27196", "cat": "마케팅·홍보"}, {"city": "광명시", "name": "장인대학 2기 운영 - 상권친화형 도시조성 소상공인 분야 재공고", "agency": "광명시 일자리경제과 / 광명시자영업지원센터", "target": "광명시 외식업 소상공인 및 관내 창업 희망 예비창업자, 30명 이내(1기 수료자 제외)", "support": "4개월 도제식(1:1) 실습 중심 창업·경영 교육, 요리 실습, 선진기업 견학(예비창업자 미창업 시 교육비 환수)", "period": "2026-10-14 ~ 2026-11-13", "deadline": "2026-11-13", "how": "방문 또는 이메일(hyojj0902@korea.kr) 접수. 문의 02-2680-6717", "url": "https://sbdc.gm.go.kr/s41/27196", "cat": "컨설팅·교육·기타"}, {"city": "광명시", "name": "2026년 소상공인 경영역량강화 교육(교육대상자 모집)", "agency": "광명시자영업지원센터", "target": "광명시 관내 소상공인 및 예비창업자, 30명 선착순", "support": "무료 교육(90분). 잔여 일정 2026-11-13 14:00 '정부지원사업 및 정책자금 100% 활용하기'", "period": "강의별 상시 접수(잔여 강의 2026-11-13)", "deadline": "2026-11-13", "how": "교육신청서 이메일(suk29100@korea.kr), 팩스(02-2680-2770) 또는 방문 접수. 문의 02-2680-7970", "url": "https://sbdc.gm.go.kr/s41/26834", "cat": "컨설팅·교육·기타"}, {"city": "김포시", "name": "2026년 음식점 위생등급 지정업소 종합청소비 지원", "agency": "김포시 식품안전과", "target": "위생등급제 지정 후 1년이 지난 김포시 일반음식점·휴게음식점", "support": "주방시설(닥트·후드·환풍기 등) 및 바닥·벽 청소비, 업소당 최대 70만원(연 1회)", "period": "2026-01-07 ~ 2026-12-12", "deadline": "2026-12-12", "how": "이메일(eun5632@korea.kr) 또는 방문(식품안전과). 문의 031-980-2238", "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000117730", "cat": "시설·환경개선"}, {"city": "김포시", "name": "김포금빛몰(E-커머스) 입점기업 모집", "agency": "김포산업진흥원 기업육성팀", "target": "김포시 소재, 김포에서 생산·가공한 상품을 판매하는 통신판매 자격 보유 사업자", "support": "온라인몰 입점 및 연계 홍보 지원(현금 지원 없음)", "period": "상시 접수", "deadline": "상시", "how": "입점신청 서류 이메일 접수(iglee@gopa.or.kr). 문의 031-981-1329", "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000117358", "cat": "마케팅·홍보"}, {"city": "군포시", "name": "2026년 품질경쟁력 강화 지원사업(인증·지식재산권 비용)", "agency": "군포산업진흥원 기업혁신팀", "target": "군포시 관내 중소벤처기업·개인사업자(소상공인 전용 아님). 2026년 내 인증 획득 또는 지식재산권 출원 완료 기업", "support": "제품인증·지식재산권 취득 비용 업체당 최대 300만원", "period": "2026-04-29 ~ 예산 소진 시까지", "deadline": "예산소진시", "how": "이메일 접수(ecsohn@gpipa.or.kr). 문의 031-380-7143", "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000121444", "cat": "컨설팅·교육·기타"}, {"city": "이천시", "name": "이천시 상권활성화센터 경영안정 프로그램(1:1 무료 컨설팅)", "agency": "이천시 상권활성화센터(민생일자리과)", "target": "이천시 관내 소상공인 및 예비창업자", "support": "일반 컨설팅(정부정책·사업 상담)과 전문 컨설팅(세무·노무·법률·홍보·상권분석) 무료", "period": "일반 컨설팅 연중 상시(전문 컨설팅은 상·하반기 운영기간 내)", "deadline": "상시", "how": "홈페이지·전화·방문 신청. 문의 031-644-4168", "url": "https://www.icheon.go.kr/market/contents.do?mid=0302000000", "cat": "컨설팅·교육·기타"}, {"city": "양주시", "name": "2026년 음식점 미세먼지·악취 방지시설 설치 지원(양주시 대상)", "agency": "경기도·경기환경에너지진흥원 환경사업팀", "target": "양주시 소재 미세먼지·악취 배출 음식점(최근 5년 내 유사 지원 이력 없는 업소)", "support": "방지시설 설치비 1개소당 최대 3,600만원(자부담 10%, 3년 유지 의무)", "period": "2026-10-14 변경공고 ~ 예산 소진 시까지", "deadline": "예산소진시", "how": "방문·우편 접수(경기환경에너지진흥원 환경본부, 김포). 문의 031-985-0586", "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000127205", "cat": "시설·환경개선"}, {"city": "안성시", "name": "2026년 소상공인 카드수수료 지원(안성사랑카드 가맹점)", "agency": "안성시 일자리경제과", "target": "안성시 내 영업 중 소상공인, 안성사랑카드 가맹점, 2025년 연매출 5억원 미만", "support": "2025년 카드매출액의 0.5%, 업체당 최대 50만원", "period": "2026-05-13 ~ 2026-10-30 (선착순, 예산 소진 시 조기마감)", "deadline": "2026-10-30", "how": "안성시 홈페이지 온라인 신청 또는 읍면동 행정복지센터 방문. 문의 031-678-2434~6", "url": "https://www.anseong.go.kr/portal/contents.do?mId=0305030100", "cat": "수수료·보험료"}, {"city": "가평군", "name": "소상공인 홍보 마케팅 지원", "agency": "가평군 소상공인지원과", "target": "관내 소상공인 약 80개소", "support": "온·오프라인 홍보비 업소당 최대 100만원(지원 50%, 자부담 50%)", "period": "2026-03-09 ~ 예산 소진 시까지", "deadline": "예산소진시", "how": "소상공인지원팀 문의 후 신청(031-580-2206)", "url": "https://www.gp.go.kr/portal/contents.do?key=2385", "cat": "마케팅·홍보"}, {"city": "가평군", "name": "첫 출발 응원 창업 소상공인 지원", "agency": "가평군 소상공인지원과", "target": "관내 창업 소상공인 약 20개소(사업자등록 12개월 이내 또는 2026년 등록)", "support": "인테리어·간판·썬팅·스마트 주문결제시스템 업소당 최대 200만원(지원 50%)", "period": "2026-02-27 ~ 예산 소진 시까지", "deadline": "예산소진시", "how": "소상공인지원팀 문의 후 신청(031-580-2206)", "url": "https://www.gp.go.kr/portal/contents.do?key=2385", "cat": "시설·환경개선"}, {"city": "가평군", "name": "전통시장 화재공제 가입 지원", "agency": "가평군 시장관리팀", "target": "가평군 전통시장 내 영업 점포", "support": "화재공제료의 60% 지원(자부담 40%)", "period": "2026-01 ~ 2026-12, 예산 소진 시까지", "deadline": "예산소진시", "how": "소진공 화재공제 상담사 또는 전통시장 화재공제 웹사이트 가입. 문의 031-580-2276", "url": "https://www.gp.go.kr/portal/contents.do?key=2385", "cat": "수수료·보험료"}, {"city": "가평군", "name": "소상공인 SNS홍보단 운영(업소 방문 홍보)", "agency": "가평군 소상공인지원과", "target": "관내 소상공인 업소", "support": "SNS홍보단 업소 방문 후 SNS 후기 게시(무료 홍보)", "period": "2026-02 ~ 2026-12 운영, 상시 신청", "deadline": "2026-12-31", "how": "방문 희망 업체 QR코드 신청. 문의 031-580-4882", "url": "https://www.gp.go.kr/portal/contents.do?key=2385", "cat": "마케팅·홍보"}, {"city": "경기도 전역", "name": "2026년 경기도 1인 소상공인 고용보험료 지원사업", "agency": "경기도·경기도시장상권진흥원", "target": "자영업자 고용보험에 가입한 경기도 내 1인 소상공인(공동사업자는 대표 1인). 타 사업장 근로자 고용보험 동시 가입자 제외", "support": "월 납입 고용보험료의 20~30%를 분기별로 최대 5년(60개월) 지원. 월 8,190원~22,820원(등급별). 정부(소진공) 지원과 중복 가능", "period": "2026-09-01 ~ 2026-12-31 18:00 (예산 소진 시 조기 마감)", "deadline": "2026-12-31", "how": "경기바로(ggbaro.kr) 온라인 신청, 또는 우편·방문·팩스(경기도시장상권진흥원 소상공인팀). 문의 1600-8001", "url": "https://ggbaro.kr/apply/biz-announce.do?bizId=2026-022-01&bizType=01", "cat": "수수료·보험료"}, {"city": "경기도 전역", "name": "2026년 경기도 소상공인 새출발 재기 지원사업(영업지원)", "agency": "경기도시장상권진흥원", "target": "새출발기금 채무조정 약정 후 정상 상환 중인 경기도 소상공인(개업 90일 이상). 2026년 경기도 점포환경개선·점포홍보 수혜자, 무점포 사업자 제외", "support": "점포환경개선 최대 300만원 또는 점포홍보 최대 200만원(1개 분야, 공급가액 기준, 승인 후 본인 통장 입금). 270개사 내외", "period": "2026-02-27 ~ 예산 소진 시까지", "deadline": "예산소진시", "how": "경기바로(ggbaro.kr) 온라인 접수(공공마이데이터 간편신청). 문의 1600-8001", "url": "https://ggbaro.kr/apply/biz-announce.do?bizId=2026-060-02&bizType=01", "cat": "시설·환경개선"}, {"city": "경기도 전역", "name": "2026년 경기도 소상공인 사업정리 지원사업", "agency": "경기도·경기도시장상권진흥원", "target": "경기도 내 폐업(2025-01-01 이후) 또는 폐업 예정 소상공인. 경기도에서 180일 이상 영업, 2023~2026년 유사사업 기수혜자·다중사업자 제외", "support": "사업정리 1:1 전문 컨설팅(창업·경영·직업·심리·금융) + 재기장려금 1개사당 200만원. 320개사 내외", "period": "2026-04-13 10:00 ~ 예산 소진 시까지", "deadline": "예산소진시", "how": "대표자 본인이 경기바로(ggbaro.kr) 간편접수 또는 온라인 신청(방문·우편 불가). 문의 1600-8001", "url": "https://ggbaro.kr/apply/biz-announce.do?bizId=2026-004-01&bizType=01", "cat": "보조금·지원금"}, {"city": "경기도 전역", "name": "경기도 자영업 아카데미 교육생 모집(상시)", "agency": "경기도시장상권진흥원", "target": "경기도 소상공인·예비창업자", "support": "창업·경영·마케팅·디지털 전환 등 온·오프라인 무료 교육(보증 의무교육 포함)", "period": "연중 상시", "deadline": "상시", "how": "경기도 자영업아카데미(edu.gmr.or.kr)에서 과정 선택 후 신청. 문의 1600-8001", "url": "https://edu.gmr.or.kr/main", "cat": "컨설팅·교육·기타"}, {"city": "전국 공통", "name": "2026년 소상공인 경영안정 바우처(25만원)", "agency": "중소벤처기업부·소상공인시장진흥공단", "target": "2025년 연매출 0원 초과 1억 400만원 미만, 2025-12-31 이전 개업, 신청일 기준 정상 영업 중인 소상공인", "support": "사업체당 25만원 카드 포인트형 바우처. 전기·가스·수도 등 공과금, 4대 보험료, 차량 연료비, 전통시장 화재공제료에 사용(통신비 제외). 사용기한 2026-12-31", "period": "2026-02-09 ~ 2026-12-18 18:00 (예산 소진 시 조기 마감)", "deadline": "2026-12-18", "how": "소상공인24(sbiz24.kr) 또는 경영안정바우처 사이트(voucher.sbiz24.kr) 온라인 신청. 문의 1533-0600", "url": "https://voucher.sbiz24.kr/", "cat": "보조금·지원금", "note": "마감일은 시·군 안내 게시글 기준"}, {"city": "전국 공통", "name": "2026년 소상공인 고효율기기 구매비용 지원", "agency": "한국전력공사", "target": "소상공인 사업장(세부 자격·대상 기기는 공고문 확인)", "support": "냉난방기·냉장고 등 고효율기기 구매비용 일부 지원(구매기간 2026-01-01 ~ 12-31)", "period": "2026-02-09 ~ 2026-12-31", "deadline": "2026-12-31", "how": "한전 고효율기기 지원 신청 사이트 또는 고객센터 1551-1212", "url": "https://www.gimpo.go.kr/portal/selectBbsNttView.do?key=6177&bbsNo=1344&nttNo=965199", "cat": "시설·환경개선", "note": "김포시 안내 게시글 기준"}, {"city": "전국 공통", "name": "소상공인 도시가스요금 4개월 분할납부", "agency": "한국도시가스협회·지역 도시가스사(경기 남부 ㈜삼천리 등)", "target": "도시가스를 사용하는 소상공인", "support": "당월 도시가스요금을 4개월 균등 분할 납부(이자 없음). 적용기간 2026-10 ~ 2027-03", "period": "2026-10 ~ 2027-03 (별도 마감 없음)", "deadline": "상시", "how": "관할 도시가스사 고객센터 신청(삼천리 1544-3002). 문의 한국도시가스협회 070-8282-8322", "url": "https://www.gunpo.go.kr/www/selectBbsNttView.do?bbsNo=675&key=3890&nttNo=326567", "cat": "수수료·보험료", "note": "군포시 안내 게시글 기준"}];
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const SCOPE_ORDER = {"경기도 전역":0,"전국 공통":1};
+const ALL_CITIES = ["가평군","고양시","과천시","광명시","광주시","구리시","군포시","김포시","남양주시","동두천시","부천시","성남시","수원시","시흥시","안산시","안성시","안양시","양주시","양평군","여주시","연천군","오산시","용인시","의왕시","의정부시","이천시","파주시","평택시","포천시","하남시","화성시"];
+const CATS = ["보조금·지원금","수수료·보험료","마케팅·홍보","시설·환경개선","컨설팅·교육·기타"];
+
+function ddayInfo(d){
+  if(!d) return {cls:"open",label:"접수중"};
+  if(d==="상시") return {cls:"open",label:"상시 접수"};
+  if(d==="예산소진시") return {cls:"open",label:"예산 소진 시까지"};
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d);
+  if(!m) return {cls:"open",label:d};
+  const t = new Date(+m[1],+m[2]-1,+m[3]); t.setHours(0,0,0,0);
+  const diff = Math.round((t-TODAY)/86400000);
+  if(diff<0) return {cls:"closed",label:"마감 (확인 필요)",diff};
+  if(diff===0) return {cls:"soon",label:"오늘 마감",diff};
+  if(diff<=14) return {cls:"soon",label:"D-"+diff,diff};
+  return {cls:"open",label:"D-"+diff,diff};
+}
+function sortKey(d){ if(!d||d==="상시") return 99999; if(d==="예산소진시") return 90000; const i=ddayInfo(d); return i.diff==null?99999:(i.diff<0?100000+i.diff:i.diff); }
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+const state={q:"",city:"",cat:"",sort:"city"};
+try{ const s=JSON.parse(localStorage.getItem("ggmap-state")||"{}"); Object.assign(state,s); }catch(e){}
+function save(){ try{localStorage.setItem("ggmap-state",JSON.stringify(state))}catch(e){} }
+
+const cities=[...new Set(DATA.map(d=>d.city))].sort((a,b)=>{
+  const oa=SCOPE_ORDER[a]??2, ob=SCOPE_ORDER[b]??2; if(oa!==ob) return oa-ob; return a.localeCompare(b,"ko");
+});
+const citySel=document.getElementById("city");
+cities.forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c+" ("+DATA.filter(d=>d.city===c).length+")";citySel.appendChild(o)});
+if(!cities.includes(state.city)) state.city="";
+citySel.value=state.city;
+document.getElementById("sort").value=state.sort;
+document.getElementById("q").value=state.q;
+
+const catsEl=document.getElementById("cats");
+["전체",...CATS].forEach(c=>{
+  const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=c;
+  b.addEventListener("click",()=>{state.cat=(c==="전체"?"":c);save();render()});
+  catsEl.appendChild(b);
+});
+
+function render(){
+  [...catsEl.children].forEach(b=>b.setAttribute("aria-pressed",(b.textContent==="전체"?state.cat==="":state.cat===b.textContent)?"true":"false"));
+  const q=state.q.trim().toLowerCase();
+  let rows=DATA.filter(d=>(!state.city||d.city===state.city)&&(!state.cat||d.cat===state.cat)&&(!q||[d.name,d.support,d.agency,d.target,d.city].join(" ").toLowerCase().includes(q)));
+  const list=document.getElementById("list"); list.innerHTML="";
+  if(!rows.length){ list.innerHTML='<p class="empty">조건에 맞는 사업이 없습니다. 검색어나 필터를 바꿔 보세요.</p>'; }
+  else if(state.sort==="deadline"){
+    rows=[...rows].sort((a,b)=>sortKey(a.deadline)-sortKey(b.deadline)||a.city.localeCompare(b.city,"ko"));
+    const sec=document.createElement("section");sec.className="city";
+    sec.innerHTML='<div class="city-head"><h2>마감 임박 순</h2><span class="n">'+rows.length+'건</span></div><div class="grid">'+rows.map(card).join("")+'</div>';
+    list.appendChild(sec);
+  } else {
+    const byCity=new Map(); rows.forEach(r=>{ if(!byCity.has(r.city)) byCity.set(r.city,[]); byCity.get(r.city).push(r); });
+    const order=[...byCity.keys()].sort((a,b)=>{const oa=SCOPE_ORDER[a]??2,ob=SCOPE_ORDER[b]??2;if(oa!==ob)return oa-ob;return a.localeCompare(b,"ko")});
+    order.forEach(c=>{
+      const items=byCity.get(c).sort((a,b)=>sortKey(a.deadline)-sortKey(b.deadline));
+      const scope = c==="경기도 전역"?"경기도 내 모든 시·군 소상공인 신청 가능":c==="전국 공통"?"전국 사업 · 경기도 소상공인도 신청 가능":"";
+      const sec=document.createElement("section");sec.className="city";
+      sec.innerHTML='<div class="city-head"><h2>'+esc(c)+'</h2><span class="n">'+items.length+'건</span>'+(scope?'<span class="scope">'+scope+'</span>':'')+'</div><div class="grid">'+items.map(card).join("")+'</div>';
+      list.appendChild(sec);
+    });
+  }
+  const found=new Set(DATA.filter(d=>!SCOPE_ORDER.hasOwnProperty(d.city)).map(d=>d.city));
+  const missing=ALL_CITIES.filter(c=>!found.has(c));
+  const none=document.getElementById("none");
+  none.hidden = (state.city!=="" && !missing.includes(state.city)) || state.sort==="deadline";
+  none.innerHTML='<h2>시·군 자체 사업이 확인되지 않은 지역 ('+missing.length+'곳)</h2><p>2026-10-19 기준 각 시·군 고시공고와 소상공인 게시판에서 현재 접수 중인 비대출 자체 사업을 찾지 못했습니다. 대부분 상반기 경영환경개선 사업이 이미 마감된 상태입니다. 이 지역 소상공인도 위의 <b>경기도 전역</b>·<b>전국 공통</b> 사업은 그대로 신청할 수 있습니다.</p><ul>'+missing.map(c=>'<li>'+esc(c)+'</li>').join("")+'</ul>';
+  const soon=DATA.filter(d=>ddayInfo(d.deadline).cls==="soon").length;
+  document.getElementById("stats").innerHTML=
+    '<div class="stat"><b>'+DATA.length+'</b><span>접수 중인 사업</span></div>'+
+    '<div class="stat"><b>'+found.size+'</b><span>자체 사업 확인 시·군</span></div>'+
+    '<div class="stat"><b>'+DATA.filter(d=>SCOPE_ORDER.hasOwnProperty(d.city)).length+'</b><span>광역·전국 공통</span></div>'+
+    '<div class="stat"><b>'+soon+'</b><span>2주 내 마감</span></div>';
+}
+function card(d){
+  const i=ddayInfo(d.deadline);
+  const showCity = state.sort==="deadline" || state.city==="";
+  return '<article class="card">'+
+    '<div class="top"><span class="tag cat">'+esc(d.cat)+'</span><span class="tag '+i.cls+'">'+i.label+'</span>'+(showCity?'<span class="tag">'+esc(d.city)+'</span>':'')+'</div>'+
+    '<h3>'+esc(d.name)+'</h3>'+
+    '<div class="agency">'+esc(d.agency)+'</div>'+
+    '<dl><dt>대상</dt><dd>'+esc(d.target)+'</dd><dt>내용</dt><dd>'+esc(d.support)+'</dd><dt>접수</dt><dd>'+esc(d.period)+'</dd><dt>신청</dt><dd>'+esc(d.how)+'</dd></dl>'+
+    '<div class="foot"><span>'+(d.note?esc(d.note):'')+'</span>'+(d.url?'<a href="'+esc(d.url)+'" target="_blank" rel="noopener">공고 보기 ↗</a>':'')+'</div>'+
+  '</article>';
+}
+document.getElementById("q").addEventListener("input",e=>{state.q=e.target.value;save();render()});
+citySel.addEventListener("change",e=>{state.city=e.target.value;save();render()});
+document.getElementById("sort").addEventListener("change",e=>{state.sort=e.target.value;save();render()});
+render();
+</script>
+
+</body>
+</html>
